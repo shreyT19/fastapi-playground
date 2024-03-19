@@ -5,9 +5,12 @@ import models
 from schemas import UserCreate, UserResponseSchema
 from utils import get_password_hash
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/users",
+    tags=['Users']
+)
 
-@router.post('/users',status_code=status.HTTP_201_CREATED,response_model=UserResponseSchema)
+@router.post('/',status_code=status.HTTP_201_CREATED,response_model=UserResponseSchema)
 async def create_user(user: UserCreate,db: Session = Depends(get_db)):
 
     # we are hashing the password before storing it in the database
@@ -19,7 +22,7 @@ async def create_user(user: UserCreate,db: Session = Depends(get_db)):
     db.refresh(new_user)
     return new_user
 
-@router.get('/users/{id}',response_model=UserResponseSchema)
+@router.get('/{id}',response_model=UserResponseSchema)
 async def get_user(id:int,db: Session = Depends(get_db)):
 
     user = db.query(models.Users).filter(models.Users.id == id).first()

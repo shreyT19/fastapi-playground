@@ -4,9 +4,12 @@ from database import get_db
 import models
 from schemas import CreatePost, UpdatePost
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/sqlalchemy/posts",
+    tags=['Posts']
+)
 
-@router.get('/sqlalchemy/posts',response_model=list[UpdatePost])
+@router.get('/',response_model=list[UpdatePost])
 async def get_sqlalchemy_posts(db: Session = Depends(get_db)):
 
     posts =  db.query(models.Post).all()
@@ -22,7 +25,7 @@ async def create_sqlalchemy_post(post: CreatePost, db: Session = Depends(get_db)
     db.refresh(new_post)
     return new_post
 
-@router.get('/sqlalchemy/posts/{id}')
+@router.get('/{id}')
 async def get_sqlalchemy_post (id:int, db:Session= Depends(get_db)):
 
     post = db.query(models.Post).filter(models.Post.id == id).first()
@@ -30,7 +33,7 @@ async def get_sqlalchemy_post (id:int, db:Session= Depends(get_db)):
         return post 
     raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} was not found")
 
-@router.delete('/sqlalchemy/posts/{id}', status_code=status.HTTP_200_OK)
+@router.delete('/{id}', status_code=status.HTTP_200_OK)
 async def delete_sqlalchemy_post(id:int, db:Session=Depends(get_db)):
    
    deleted_post = db.query(models.Post).filter(models.Post.id == id)
@@ -39,7 +42,7 @@ async def delete_sqlalchemy_post(id:int, db:Session=Depends(get_db)):
    db.commit()
    return {"message": f"Post with id {id} was deleted successfully"}
 
-@router.put('/sqlalchemy/posts/{id}')
+@router.put('/{id}')
 async def update (id:int,post:CreatePost, db:Session=Depends(get_db)):
    
    post_to_be_updated = db.query(models.Post).filter(models.Post.id == id)
