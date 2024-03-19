@@ -1,7 +1,7 @@
 from fastapi.params import Body
-from pydantic import BaseModel
+from pydantic import BaseModel,EmailStr
 from typing import Optional
-from random import randrange
+from datetime import datetime
 
 class PostBase(BaseModel):
     title: str
@@ -13,5 +13,26 @@ class PostBase(BaseModel):
 class CreatePost(PostBase):
     pass
 
+class UpdatePost(PostBase):
+    id: int
+    created_at: datetime
+    
+    
+
+    # Use this class to return the data in the response
+    # class config:
+    #     orm_mode = True
 
 
+#Users schema
+    
+class UserCreate(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+
+class UserResponseSchema (BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    created_at: datetime
