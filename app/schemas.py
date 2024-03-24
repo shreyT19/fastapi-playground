@@ -36,3 +36,14 @@ class UserResponseSchema (BaseModel):
     name: str
     email: EmailStr
     created_at: datetime
+
+class UserLoginSchema(BaseModel):
+    email: EmailStr
+    password: str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    user_id: Optional[int]
