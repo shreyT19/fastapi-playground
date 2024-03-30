@@ -13,11 +13,17 @@ class PostBase(BaseModel):
 class CreatePost(PostBase):
     pass
 
+class UserResponseSchema (BaseModel):
+    id: int
+    name: str
+    email: EmailStr
+    created_at: datetime
+
 class UpdatePost(PostBase):
     id: int
     created_at: datetime
     owner_id: int
-    
+    owner: UserResponseSchema
     
 
     # Use this class to return the data in the response
@@ -32,11 +38,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
-class UserResponseSchema (BaseModel):
-    id: int
-    name: str
-    email: EmailStr
-    created_at: datetime
 
 class UserLoginSchema(BaseModel):
     email: EmailStr
