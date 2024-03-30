@@ -37,20 +37,23 @@ async def get_sqlalchemy_post(id:int, db:Session= Depends(get_db),current_user:i
 @router.delete('/{id}', status_code=status.HTTP_200_OK)
 async def delete_sqlalchemy_post(id:int, db:Session=Depends(get_db),current_user:int = Depends(get_current_user)):
    
-   deleted_post = db.query(models.Post).filter(models.Post.id == id)
-   if deleted_post.first() == None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} was not found")
-   if(deleted_post.first().__dict__['owner_id'] != current_user.id): raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User with id {current_user.id} is not authorized to delete post with id {id}")
-   deleted_post.delete(synchronize_session=False)
+   deleted_post_query = db.query(models.Post).filter(models.Post.id == id)
+   deleted_post = deleted_post_query.first()
+   if deleted_post == None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} was not found")
+   if(deleted_post.owner_id != current_user.id): raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User with id {current_user.id} is not authorized to delete post with id {id}")
+   deleted_post_query.delete(synchronize_session=False)
    db.commit()
    return {"message": f"Post with id {id} was deleted successfully"}
 
 @router.put('/{id}')
-async def update (id:int,post:CreatePost, db:Session=Depends(get_db),current_user:int = Depends(get_current_user)):
+async def update (id:int,updated_post:CreatePost, db:Session=Depends(get_db),current_user:int = Depends(get_current_user)):
    
-   post_to_be_updated = db.query(models.Post).filter(models.Post.id == id)
-   if post_to_be_updated.first() == None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} was not found")
-   if(post_to_be_updated.first().__dict__['owner_id'] != current_user.id): raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User with id {current_user.id} is not authorized to update post with id {id}")
-   post_to_be_updated.update(post.dict() ,synchronize_session=False)
+   post_query = db.query(models.Post).filter(models.Post.id == id)
+   post = post_query.first()
+   
+   if post == None: raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Post with id {id} was not found")
+   if(post.owner_id != current_user.id): raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail=f"User with id {current_user.id} is not authorized to update post with id {id}")
+   post_query.update(updated_post.dict() ,synchronize_session=False)
    db.commit()
    return {"message": f"Post with id {id} was updated successfully",
-            "updated_post":post_to_be_updated.first()}
+            "updated_post":post_query.first()}
