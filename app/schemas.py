@@ -16,6 +16,7 @@ class CreatePost(PostBase):
 class UpdatePost(PostBase):
     id: int
     created_at: datetime
+    owner_id: int
     
     
 
