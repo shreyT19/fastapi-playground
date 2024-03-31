@@ -1,19 +1,26 @@
 from fastapi import  status,HTTPException, Depends, APIRouter
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from database import get_db
 import models
 from schemas import CreatePost, UpdatePost
 from oauth2 import get_current_user
+from typing import Optional
 
 router = APIRouter(
-    prefix="/sqlalchemy/posts",
+    prefix="/posts",
     tags=['Posts']
 )
 
 @router.get('/',response_model=list[UpdatePost])
-async def get_sqlalchemy_posts(db: Session = Depends(get_db),current_user:int = Depends(get_current_user)):
+async def get_sqlalchemy_posts(db: Session = Depends(get_db),current_user:int = Depends(get_current_user),limit:int=10,skip:int=0, searchQuery: Optional[str] = ''):
 
-    posts =  db.query(models.Post).filter(models.Post.owner_id == current_user.id).all()
+    #here "skip" skips the first "skip" number of posts 
+    #suppose we have 10 posts and we want to skip the first 5 posts and get the next 5 posts
+    #we will set skip = 5
+    posts =  db.query(models.Post).filter(models.Post.owner_id == current_user.id)
+    posts = posts.filter(func.lower(models.Post.title).contains(searchQuery.lower())).offset(skip).limit(limit).all()
+
     return posts
     
 
