@@ -49,3 +49,8 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     user_id: Optional[int]
+    
+
+class VoteSchema(BaseModel):
+    post_id: int
+    direction: bool
