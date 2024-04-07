@@ -35,11 +35,12 @@ router = APIRouter(
 @router.post('/', status_code=status.HTTP_201_CREATED)
 async def vote(vote: VoteSchema, db:Session = Depends(get_db), current_user: int = Depends(get_current_user)):
     try:
+        #check if the post exists
         post = db.query(models.Post).filter(models.Post.id == vote.post_id).first()
         if post is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Post was not found")
         vote_query = db.query(models.Votes).filter(models.Votes.user_id == current_user.id, models.Votes.post_id == vote.post_id).first()
-        #check if the post exists in the database else raise an error
+        #check if the vote is an upvote or downvote
         if vote.direction:
             if vote_query is not None:
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User has already voted on this post")
