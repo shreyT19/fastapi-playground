@@ -10,7 +10,6 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-
 while True:
     try:
         connection = psycopg2.connect(
