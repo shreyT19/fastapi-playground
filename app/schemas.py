@@ -19,17 +19,21 @@ class UserResponseSchema (BaseModel):
     email: EmailStr
     created_at: datetime
 
+
 class UpdatePost(PostBase):
+    pass
     id: int
     created_at: datetime
     owner_id: int
     owner: UserResponseSchema
-    
 
     # Use this class to return the data in the response
     # class config:
     #     orm_mode = True
 
+class PostOut(BaseModel):
+    Post: UpdatePost
+    votes: int
 
 #Users schema
     
