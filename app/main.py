@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
@@ -27,6 +28,15 @@ while True:
         print("Error",e)
         time.sleep(5)
 
+ALLOWED_HOSTS = ['*']
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ALLOWED_HOSTS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
 app.include_router(posts.router)
 app.include_router(users.router)
